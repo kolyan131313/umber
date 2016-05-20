@@ -1,8 +1,10 @@
 <?php
 namespace frontend\controllers;
 
+use common\models\Posts;
 use Yii;
 use yii\base\InvalidParamException;
+use yii\data\ActiveDataProvider;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
@@ -11,7 +13,6 @@ use common\models\LoginForm;
 use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
-use frontend\models\ContactForm;
 
 /**
  * Site controller
@@ -26,26 +27,26 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'signup'],
+                'only'  => ['logout', 'signup'],
                 'rules' => [
                     [
                         'actions' => ['signup'],
-                        'allow' => true,
-                        'roles' => ['?'],
+                        'allow'   => true,
+                        'roles'   => ['?'],
                     ],
                     [
                         'actions' => ['logout'],
-                        'allow' => true,
-                        'roles' => ['@'],
+                        'allow'   => true,
+                        'roles'   => ['@'],
                     ],
                 ],
             ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
+            'verbs'  => [
+                'class'   => VerbFilter::className(),
                 'actions' => [
                     'logout' => ['post'],
                 ],
-            ],
+            ]
         ];
     }
 
@@ -55,11 +56,11 @@ class SiteController extends Controller
     public function actions()
     {
         return [
-            'error' => [
+            'error'   => [
                 'class' => 'yii\web\ErrorAction',
             ],
             'captcha' => [
-                'class' => 'yii\captcha\CaptchaAction',
+                'class'           => 'yii\captcha\CaptchaAction',
                 'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
             ],
         ];
@@ -72,7 +73,17 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $this->view->title = 'Posts List';
+
+        /** @var ActiveDataProvider $dataProvider */
+        $dataProvider = new ActiveDataProvider([
+            'query'      => Posts::find()->where(['visible' => 1, 'moderated' => 1])->orderBy('id DESC'),
+            'pagination' => [
+                'pageSize' => 2
+            ],
+        ]);
+
+        return $this->render('index', ['listDataProvider' => $dataProvider]);
     }
 
     /**
@@ -109,39 +120,6 @@ class SiteController extends Controller
     }
 
     /**
-     * Displays contact page.
-     *
-     * @return mixed
-     */
-    public function actionContact()
-    {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            if ($model->sendEmail(Yii::$app->params['adminEmail'])) {
-                Yii::$app->session->setFlash('success', 'Thank you for contacting us. We will respond to you as soon as possible.');
-            } else {
-                Yii::$app->session->setFlash('error', 'There was an error sending email.');
-            }
-
-            return $this->refresh();
-        } else {
-            return $this->render('contact', [
-                'model' => $model,
-            ]);
-        }
-    }
-
-    /**
-     * Displays about page.
-     *
-     * @return mixed
-     */
-    public function actionAbout()
-    {
-        return $this->render('about');
-    }
-
-    /**
      * Signs user up.
      *
      * @return mixed
@@ -169,7 +147,9 @@ class SiteController extends Controller
      */
     public function actionRequestPasswordReset()
     {
+        /** @var PasswordResetRequestForm $model */
         $model = new PasswordResetRequestForm();
+
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             if ($model->sendEmail()) {
                 Yii::$app->session->setFlash('success', 'Check your email for further instructions.');
