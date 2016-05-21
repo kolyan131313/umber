@@ -3,10 +3,10 @@ return [
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
     'language'   => 'en-En',
     'components' => [
-        'cache'     => [
+        'cache'       => [
             'class' => 'yii\caching\FileCache',
         ],
-        'log'       => [
+        'log'         => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets'    => [
                 [
@@ -15,11 +15,20 @@ return [
                 ],
             ],
         ],
-        'formatter' => [
+        'formatter'   => [
             'dateFormat'        => 'MMM d, Y',
             'decimalSeparator'  => ',',
             'thousandSeparator' => ' ',
             'currencyCode'      => 'USD',
         ],
+        'authManager' => [
+            'class' => 'yii\rbac\DbManager',
+            'defaultRoles' => [
+                'user',
+                'moderator',
+                'admin',
+                'superadmin'
+            ],
+        ]
     ],
 ];

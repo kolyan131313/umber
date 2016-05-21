@@ -6,14 +6,13 @@ use yii\helpers\Html;
 /* @var $model common\models\Post */
 
 $this->title = 'Create Post';
-$this->params['breadcrumbs'][] = ['label' => 'Posts', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+$this->params['breadcrumbs'][] = 'Create';
 ?>
 <div class="post-create">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h1><?php echo Html::encode($this->title) ?></h1>
 
-    <?= $this->render('_form', [
+    <?php echo  $this->render('partials/_form', [
         'model' => $model,
     ]) ?>
 

@@ -40,7 +40,8 @@ return [
                 '/' => 'post/index',
                 'posts' => 'post/index',
                 'posts/<category:\w+>' => 'post/index',
-                'post/<id:\d+>' => 'post/view'
+                'post/<id:\d+>' => 'post/view',
+                'post/update/<id:\d+>' => 'post/update'
             ],
         ],
     ],

@@ -4,6 +4,7 @@ namespace common\models;
 use Yii;
 use common\components\behaviors\CBlameableBehavior;
 use yii\data\ActiveDataProvider;
+use yii\web\UploadedFile;
 
 /**
  * This is the model class for table "post".
@@ -34,12 +35,12 @@ class Post extends General
     const STATUS_UNVISIBLE = 0;
 
     /**
-     * @var category list
+     * @var array category list
      */
-    public $categories;
+    public $categories = [];
 
     /**
-     * @var category list
+     * @var string image
      */
     public $image;
 
@@ -145,10 +146,10 @@ class Post extends General
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCategories()
+    public function getCategoryList()
     {
-        return $this->hasMany(Category::className(), ['id' => 'category_id'])
-            ->viaTable(PostCategory::tableName(), ['post_id' => 'id']);
+        return $this->hasMany(Category::className(), ['id' => 'category_id'])->viaTable(PostCategory::tableName(),
+                ['post_id' => 'id']);
     }
 
     /**
@@ -194,10 +195,12 @@ class Post extends General
     public function linkCategory($categories = [])
     {
         if (!empty($categories) && is_array($categories)) {
+            PostCategory::deleteAll('post_id=' . $this->id);
+
             foreach ($categories as $category_id) {
                 /** @var Category $category */
                 $category = Category::findOne($category_id);
-                $this->link('categories', $category);
+                $this->link('categoryList', $category);
             }
         }
     }
@@ -205,11 +208,57 @@ class Post extends General
     /**
      * Get path to image
      *
+     * @param bool|string $post
      * @param string $src
      * @return string
      */
     public function getImagePath($post = false, $src = "")
     {
         return ($post ? '../' : '') . Yii::$app->params['uploadPath'] . DIRECTORY_SEPARATOR . ($src ? $src : $this->src);
+    }
+
+    /**
+     * Get related categories ids
+     */
+    public function loadCategories()
+    {
+        /** @var Category $categories */
+        $categories = $this->getCategoryList()->all();
+
+        if ($categories && is_array($categories)) {
+           foreach ($categories as $category) {
+               array_push($this->categories, $category->id);
+           }
+        }
+    }
+
+    /**
+     * Prepare file fore create or update
+     */
+    public function prepareUploadFile(UploadedFile $image)
+    {
+        $img_parts = (explode(".", $image->name));
+
+        $this->image = Yii::$app->security->generateRandomString() . "." . end($img_parts);
+        $this->src = $this->image;
+
+        return $this->getImagePath();
+    }
+
+    /**
+     * Set moderated false
+     *
+     * @param bool $insert
+     * @return bool
+     */
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+            $this->moderated = 0;
+
+            return true;
+        }
+
+        return false;
     }
 }

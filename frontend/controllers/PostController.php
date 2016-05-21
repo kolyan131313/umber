@@ -3,9 +3,11 @@
 namespace frontend\controllers;
 
 use Yii;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\data\ActiveDataProvider;
 use common\models\Post;
+use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 use yii\web\UploadedFile;
 
@@ -24,6 +26,29 @@ class PostController extends Controller
     public function init()
     {
         $this->loggedUser = \Yii::$app->user->identity;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow'   => true,
+                        'actions' => ['index'],
+                        'roles'   => ['?'],
+                    ],
+                    [
+                        'allow' => true,
+                        'roles' => ['user'],
+                    ]
+                ],
+            ]
+        ];
     }
 
     /**
@@ -55,12 +80,20 @@ class PostController extends Controller
      *
      * @param $id
      * @return string
+     * @throws ForbiddenHttpException
      * @throws NotFoundHttpException
      */
     public function actionView($id)
     {
+        /** @var Post $model */
+        $model = $this->findModel($id);
+
+        if ($model->unvisible !== Post::STATUS_UNVISIBLE || $model->moderated !== Post::STATUS_MODERATED) {
+            throw new ForbiddenHttpException('No access');
+        }
+
         return $this->render('view', [
-            'model'      => $this->findModel($id),
+            'model'      => $model,
             'loggedUser' => $this->loggedUser
         ]);
     }
@@ -78,12 +111,7 @@ class PostController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             /** @var UploadedFile $image */
             $image = UploadedFile::getInstance($model, 'image');
-            $img_parts = (explode(".", $image->name));
-
-            $model->image = Yii::$app->security->generateRandomString() . "." . end($img_parts);
-            $path = $model->getImagePath($model->image);
-
-            $model->src = $model->image;
+            $path = $model->prepareUploadFile($image);
 
             if ($model->save()) {
                 $image->saveAs($path);
@@ -105,17 +133,38 @@ class PostController extends Controller
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
+     * @throws ForbiddenHttpException
+     * @throws NotFoundHttpException
      */
     public function actionUpdate($id)
     {
         /** @var Post $model */
         $model = $this->findModel($id);
 
-        if ($model->load(\Yii::$app->request->post()) && $model->save()) {
+        if ($model->created_by !== $this->loggedUser->id) {
+            throw new ForbiddenHttpException('No access');
+        }
+
+        if ($model->load(\Yii::$app->request->post())) {
+
+            /** @var UploadedFile $image */
+            $image = UploadedFile::getInstance($model, 'image');
+
+            $path = $model->prepareUploadFile($image);
             Yii::$app->getSession()->setFlash('success', 'Post was successfully updated');
 
-            return $this->refresh();
+            if ($model->save()) {
+                $image->saveAs($path);
+                $model->linkCategory($model->categories);
+
+                Yii::$app->getSession()->setFlash('success', 'Post was successfully created');
+
+                return $this->refresh();
+            }
         } else {
+            $model->loadCategories();
+            $model->image = $model->getImagePath(false);
+
             return $this->render('update', [
                 'model' => $model,
             ]);

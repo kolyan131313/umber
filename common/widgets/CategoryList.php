@@ -2,6 +2,7 @@
 namespace common\widgets;
 
 use common\models\Category;
+use common\models\Post;
 use yii\bootstrap\Widget;
 
 /**
@@ -16,9 +17,14 @@ class CategoryList extends Widget
     public $limit = 10;
 
     /**
-     * @var object
+     * @var array object
      */
-    private $categories;
+    private $categories = [];
+
+    /**
+     * @var array object
+     */
+    private $cntPosts = [];
 
     /**
      * @var object
@@ -33,6 +39,25 @@ class CategoryList extends Widget
         parent::init();
 
         $this->categories = Category::find()->limit($this->limit)->all();
+
+        $this->calculatePosts();
+    }
+
+    /**
+     * Method for calculating post in category
+     */
+    public function calculatePosts()
+    {
+        if ($this->categories && is_array($this->categories)) {
+            foreach ($this->categories as $category) {
+                $this->cntPosts[$category->id] = 0;
+                foreach ($category->posts as $post) {
+                    if ($post->unvisible === Post::STATUS_UNVISIBLE && $post->moderated === Post::STATUS_MODERATED) {
+                        $this->cntPosts[$category->id] += 1;
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -40,7 +65,10 @@ class CategoryList extends Widget
      */
     public function run()
     {
-        return $this->render('category_list', ['categories' => $this->categories,
-                                               'loggedUser' => $this->loggedUser ]);
+        return $this->render('category_list', [
+            'categories' => $this->categories,
+            'loggedUser' => $this->loggedUser,
+            'cntPosts'   => $this->cntPosts
+        ]);
     }
 }

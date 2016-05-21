@@ -11,8 +11,8 @@ use yii\helpers\Url;
         <span class="glyphicon glyphicon-refresh"></span><?php echo Yii::$app->formatter->asDate($model->date_created); ?> |
         <span class="glyphicon glyphicon-folder-open"></span>
         Categories :
-        <?php if (isset($model->categories) && !empty($model->categories) && is_array($model->categories)) { ?>
-            <?php foreach ($model->categories as $category) { ?>
+        <?php if (isset($model->categoryList) && !empty($model->categoryList) && is_array($model->categoryList)) { ?>
+            <?php foreach ($model->categoryList as $category) { ?>
                 <a href="<?php echo Url::to(['posts/' . $category->url])?>">
                     <span class="label label-info"><?php echo $category->title; ?></span>
                 </a>

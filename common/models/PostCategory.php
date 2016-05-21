@@ -10,7 +10,7 @@ use yii\db\ActiveRecord;
  * @property integer $post_id
  * @property integer $category_id
  *
- * @property Categories $category
+ * @property Category $category
  * @property Post $post
  */
 class PostCategory extends ActiveRecord
@@ -31,7 +31,7 @@ class PostCategory extends ActiveRecord
         return [
             [['post_id', 'category_id'], 'required'],
             [['post_id', 'category_id'], 'integer'],
-            [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Categories::className(), 'targetAttribute' => ['category_id' => 'id']],
+            [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Category::className(), 'targetAttribute' => ['category_id' => 'id']],
             [['post_id'], 'exist', 'skipOnError' => true, 'targetClass' => Post::className(), 'targetAttribute' => ['post_id' => 'id']],
         ];
     }
@@ -52,7 +52,7 @@ class PostCategory extends ActiveRecord
      */
     public function getCategory()
     {
-        return $this->hasOne(Categories::className(), ['id' => 'category_id']);
+        return $this->hasOne(Category::className(), ['id' => 'category_id']);
     }
 
     /**

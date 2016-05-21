@@ -1,6 +1,5 @@
 <?php
 /* @var $this yii\web\View */
-use yii\helpers\Url;
 use yii\helpers\Html;
 ?>
 <div class="row">
@@ -9,9 +8,9 @@ use yii\helpers\Html;
             <div class="col-md-12">
                 <h4>
                     <strong>
-                        <a href="<?php echo Url::to(['post/' . $model->id])?>" class="post-title"><?php echo $model->title; ?></a>
+                        <?php echo Html::a($model->title, ['post/' . $model->id], ['class' => 'post-title']); ?>
                         <?php if(isset($model->authorCreated) && isset($loggedUser->id) && $model->authorCreated->id === $loggedUser->id) { ?>
-                            <?php echo Html::a('update', ['post/create'], ['class' => 'btn btn-xs btn-primary']); ?>
+                            <?php echo Html::a('update', ['post/update/' . $model->id], ['class' => 'btn btn-xs btn-primary']); ?>
                         <?php } ?>
                     </strong>
                 </h4>

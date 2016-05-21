@@ -28,6 +28,7 @@ class m160518_183910_categories_table extends Migration
                 'id'            => Schema::TYPE_PK,
                 'title'         => Schema::TYPE_STRING . '(255) NOT NULL',
                 'url'           => Schema::TYPE_STRING . '(255) NOT NULL',
+                'visible'       => Schema::TYPE_BOOLEAN . '(1) NOT NULL DEFAULT 0',
                 'date_created'  => Schema::TYPE_DATETIME,
                 'date_modified' => Schema::TYPE_DATETIME
             ], $tableOptions);
