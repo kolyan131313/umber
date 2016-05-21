@@ -9,7 +9,7 @@ use yii\db\Schema;
 class m160518_184444_posts_categories_table extends Migration
 {
     /**
-     * Create table `posts_categories`, indexes and foreign keys
+     * Create table `post_category`, indexes and foreign keys
      */
     public function up()
     {
@@ -24,18 +24,18 @@ class m160518_184444_posts_categories_table extends Migration
             }
 
             /** Create table */
-            $this->createTable('{{%posts_categories}}', [
+            $this->createTable('{{%post_category}}', [
                 'post_id'     => Schema::TYPE_INTEGER . '(11) NOT NULL',
                 'category_id' => Schema::TYPE_INTEGER . '(11) NOT NULL'
             ], $tableOptions);
 
             /** Add indexes */
-            $this->createIndex('ix-posts-categories-post-id', '{{%posts_categories}}', 'post_id');
-            $this->createIndex('ix-posts-categories-category-id', '{{%posts_categories}}', 'category_id');
+            $this->createIndex('ix-post-categories-post-id', '{{%post_category}}', 'post_id');
+            $this->createIndex('ix-post-categories-category-id', '{{%post_category}}', 'category_id');
 
             /** Add foreign keys */
-            $this->addForeignKey('fk-pstcat-post-id-posts-id', '{{%posts_categories}}', 'post_id', '{{%posts}}', 'id', 'RESTRICT', 'RESTRICT');
-            $this->addForeignKey('fk-pstcat-category-id-categories-id', '{{%posts_categories}}', 'category_id', '{{%categories}}', 'id', 'RESTRICT', 'RESTRICT');
+            $this->addForeignKey('fk-pstcat-post-id-post-id', '{{%post_category}}', 'post_id', '{{%post}}', 'id', 'RESTRICT', 'RESTRICT');
+            $this->addForeignKey('fk-pstcat-category-id-categories-id', '{{%post_category}}', 'category_id', '{{%category}}', 'id', 'RESTRICT', 'RESTRICT');
 
             $transaction->commit();
         } catch (\yii\db\Exception $e) {
@@ -45,7 +45,7 @@ class m160518_184444_posts_categories_table extends Migration
     }
 
     /**
-     * Drop table `posts_categories`, indexes and foreign keys
+     * Drop table `post_category`, indexes and foreign keys
      */
     public function down()
     {
@@ -54,15 +54,15 @@ class m160518_184444_posts_categories_table extends Migration
 
         try {
             /** Drop foreign keys */
-            $this->dropForeignKey('fk-pstcat-post-id-posts-id', '{{%posts_categories}}');
-            $this->dropForeignKey('fk-pstcat-category-id-categories-id', '{{%posts_categories}}');
+            $this->dropForeignKey('fk-pstcat-post-id-post-id', '{{%post_category}}');
+            $this->dropForeignKey('fk-pstcat-category-id-categories-id', '{{%post_category}}');
 
             /** Drop indexes */
-            $this->dropIndex('ix-posts-categories-post-id', '{{%posts_categories}}');
-            $this->dropIndex('ix-posts-categories-category-id', '{{%posts_categories}}');
+            $this->dropIndex('ix-post-categories-post-id', '{{%post_category}}');
+            $this->dropIndex('ix-post-categories-category-id', '{{%post_category}}');
 
             /** Drop table */
-            $this->dropTable('{{%posts_categories}}');
+            $this->dropTable('{{%post_category}}');
 
             $transaction->commit();
         } catch (\yii\db\Exception $e) {

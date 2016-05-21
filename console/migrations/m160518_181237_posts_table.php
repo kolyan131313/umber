@@ -9,7 +9,7 @@ use yii\db\Schema;
 class m160518_181237_posts_table extends Migration
 {
     /**
-     * Create table `posts`, indexes and foreign keys
+     * Create table `post`, indexes and foreign keys
      */
     public function up()
     {
@@ -24,26 +24,28 @@ class m160518_181237_posts_table extends Migration
             }
 
             /** Create table */
-            $this->createTable('{{%posts}}', [
+            $this->createTable('{{%post}}', [
                 'id'            => Schema::TYPE_PK,
                 'title'         => Schema::TYPE_STRING . '(255) NOT NULL',
                 'description'   => Schema::TYPE_STRING . '(512) NOT NULL',
                 'text'          => Schema::TYPE_TEXT,
+                'src'           => Schema::TYPE_STRING . '(255) NOT NULL',
                 'created_by'    => Schema::TYPE_INTEGER . '(11) NULL',
                 'modified_by'   => Schema::TYPE_INTEGER . '(11) NULL',
-                'moderated'     => Schema::TYPE_BOOLEAN . '(1) DEFAULT 0',
-                'visible'       => Schema::TYPE_BOOLEAN . '(1) DEFAULT 1',
+                'moderated'     => Schema::TYPE_BOOLEAN . '(1) NOT NULL DEFAULT 0',
+                'unvisible'     => Schema::TYPE_BOOLEAN . '(1) NOT NULL DEFAULT 0',
                 'date_created'  => Schema::TYPE_DATETIME,
                 'date_modified' => Schema::TYPE_DATETIME
             ], $tableOptions);
 
             /** Add indexes */
-            $this->createIndex('ix-posts-title', '{{%posts}}', 'title');
-            $this->createIndex('ix-posts-author', '{{%posts}}', 'author');
+            $this->createIndex('ix-post-title', '{{%post}}', 'title');
+            $this->createIndex('ix-post-created-by', '{{%post}}', 'created_by');
+            $this->createIndex('ix-post-modified-by', '{{%post}}', 'modified_by');
 
             /** Add foreign keys */
-            $this->addForeignKey('fk-post-created-by-user-id', '{{%posts}}', 'created_by', '{{%user}}', 'id', 'RESTRICT', 'RESTRICT');
-            $this->addForeignKey('fk-post-modified-by-user-id', '{{%posts}}', 'modified_by', '{{%user}}', 'id', 'RESTRICT', 'RESTRICT');
+            $this->addForeignKey('fk-post-created-by-user-id', '{{%post}}', 'created_by', '{{%user}}', 'id', 'RESTRICT', 'RESTRICT');
+            $this->addForeignKey('fk-post-modified-by-user-id', '{{%post}}', 'modified_by', '{{%user}}', 'id', 'RESTRICT', 'RESTRICT');
 
             $transaction->commit();
         } catch (\yii\db\Exception $e) {
@@ -53,7 +55,7 @@ class m160518_181237_posts_table extends Migration
     }
 
     /**
-     * Drop table `posts`, indexes and foreign keys
+     * Drop table `post`, indexes and foreign keys
      */
     public function down()
     {
@@ -62,15 +64,16 @@ class m160518_181237_posts_table extends Migration
 
         try {
             /** Drop foreign keys */
-            $this->dropForeignKey('fk-post-created-by-user-id', '{{%posts}}');
-            $this->dropForeignKey('fk-post-modified-by-user-id', '{{%posts}}');
+            $this->dropForeignKey('fk-post-created-by-user-id', '{{%post}}');
+            $this->dropForeignKey('fk-post-modified-by-user-id', '{{%post}}');
 
             /** Drop indexes */
-            $this->dropIndex('ix-posts-title', '{{%posts}}');
-            $this->dropIndex('ix-posts-author', '{{%posts}}');
+            $this->dropIndex('ix-post-title', '{{%post}}');
+            $this->dropIndex('ix-post-created-by', '{{%post}}');
+            $this->dropIndex('ix-post-modified-by', '{{%post}}');
 
             /** Drop table */
-            $this->dropTable('{{%posts}}');
+            $this->dropTable('{{%post}}');
 
             $transaction->commit();
         } catch (\yii\db\Exception $e) {

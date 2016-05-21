@@ -1,19 +1,25 @@
 <?php
 return [
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
-    'language' => 'ru-RU',
+    'language'   => 'en-En',
     'components' => [
-        'cache' => [
+        'cache'     => [
             'class' => 'yii\caching\FileCache',
         ],
-        'log' => [
+        'log'       => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
-            'targets' => [
+            'targets'    => [
                 [
-                    'class' => 'yii\log\FileTarget',
+                    'class'  => 'yii\log\FileTarget',
                     'levels' => ['error', 'warning'],
                 ],
             ],
-        ]
+        ],
+        'formatter' => [
+            'dateFormat'        => 'MMM d, Y',
+            'decimalSeparator'  => ',',
+            'thousandSeparator' => ' ',
+            'currencyCode'      => 'USD',
+        ],
     ],
 ];

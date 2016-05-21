@@ -12,6 +12,7 @@ return [
     'bootstrap' => ['log'],
     'controllerNamespace' => 'frontend\controllers',
     'homeUrl' => '/',
+    'defaultRoute' => 'post/index',
     'components' => [
         'user' => [
             'identityClass' => 'common\models\User',
@@ -36,7 +37,10 @@ return [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-                '/' => 'site/index',
+                '/' => 'post/index',
+                'posts' => 'post/index',
+                'posts/<category:\w+>' => 'post/index',
+                'post/<id:\d+>' => 'post/view'
             ],
         ],
     ],

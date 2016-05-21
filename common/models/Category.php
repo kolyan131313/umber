@@ -4,23 +4,25 @@ namespace common\models;
 use Yii;
 
 /**
- * This is the model class for table "categories".
+ * This is the model class for table "category".
  *
  * @property integer $id
  * @property string $title
+ * @property string $url
  * @property string $date_created
  * @property string $date_modified
  *
- * @property PostsCategories[] $postsCategories
+ * @property PostCategory[] $postsCategory
+ * @property Post[] $posts
  */
-class Categories extends General
+class Category extends General
 {
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'categories';
+        return 'category';
     }
 
     /**
@@ -29,9 +31,10 @@ class Categories extends General
     public function rules()
     {
         return [
-            [['title'], 'required'],
+            [['title', 'url'], 'required'],
             [['date_created', 'date_modified'], 'safe'],
             [['title'], 'string', 'max' => 255],
+            ['url', 'unique']
         ];
     }
 
@@ -43,6 +46,7 @@ class Categories extends General
         return [
             'id' => 'ID',
             'title' => 'Title',
+            'url' => 'Url',
             'date_created' => 'Date Created',
             'date_modified' => 'Date Modified',
         ];
@@ -53,7 +57,7 @@ class Categories extends General
      */
     public function getPostsCategories()
     {
-        return $this->hasMany(PostsCategories::className(), ['category_id' => 'id']);
+        return $this->hasMany(PostCategory::className(), ['category_id' => 'id']);
     }
 
     /**
@@ -61,7 +65,7 @@ class Categories extends General
      */
     public function getPosts()
     {
-        return $this->hasMany(Posts::className(), ['id' => 'post_id'])
-            ->viaTable(PostsCategories::tableName(), ['category_id' => 'id']);
+        return $this->hasMany(Post::className(), ['id' => 'post_id'])
+            ->viaTable(PostCategory::tableName(), ['category_id' => 'id']);
     }
 }

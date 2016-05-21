@@ -1,10 +1,8 @@
 <?php
 namespace frontend\controllers;
 
-use common\models\Posts;
 use Yii;
 use yii\base\InvalidParamException;
-use yii\data\ActiveDataProvider;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
@@ -15,7 +13,8 @@ use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
 
 /**
- * Site controller
+ * Class SiteController
+ * @package frontend\controllers
  */
 class SiteController extends Controller
 {
@@ -67,26 +66,6 @@ class SiteController extends Controller
     }
 
     /**
-     * Displays homepage.
-     *
-     * @return mixed
-     */
-    public function actionIndex()
-    {
-        $this->view->title = 'Posts List';
-
-        /** @var ActiveDataProvider $dataProvider */
-        $dataProvider = new ActiveDataProvider([
-            'query'      => Posts::find()->where(['visible' => 1, 'moderated' => 1])->orderBy('id DESC'),
-            'pagination' => [
-                'pageSize' => 2
-            ],
-        ]);
-
-        return $this->render('index', ['listDataProvider' => $dataProvider]);
-    }
-
-    /**
      * Logs in a user.
      *
      * @return mixed
@@ -97,7 +76,9 @@ class SiteController extends Controller
             return $this->goHome();
         }
 
+        /** @var LoginForm $model */
         $model = new LoginForm();
+
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             return $this->goBack();
         } else {
@@ -190,4 +171,5 @@ class SiteController extends Controller
             'model' => $model,
         ]);
     }
+
 }

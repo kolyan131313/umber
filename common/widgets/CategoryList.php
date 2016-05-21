@@ -1,7 +1,7 @@
 <?php
 namespace common\widgets;
 
-use common\models\Categories;
+use common\models\Category;
 use yii\bootstrap\Widget;
 
 /**
@@ -21,13 +21,18 @@ class CategoryList extends Widget
     private $categories;
 
     /**
+     * @var object
+     */
+    public $loggedUser;
+
+    /**
      * Init main widget params
      */
     public function init()
     {
         parent::init();
 
-        $this->categories = Categories::find()->limit($this->limit)->all();
+        $this->categories = Category::find()->limit($this->limit)->all();
     }
 
     /**
@@ -35,6 +40,7 @@ class CategoryList extends Widget
      */
     public function run()
     {
-        return $this->render('category_list', ['categories' => $this->categories]);
+        return $this->render('category_list', ['categories' => $this->categories,
+                                               'loggedUser' => $this->loggedUser ]);
     }
 }

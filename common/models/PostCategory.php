@@ -5,22 +5,22 @@ use Yii;
 use yii\db\ActiveRecord;
 
 /**
- * This is the model class for table "posts_categories".
+ * This is the model class for table "post_category".
  *
  * @property integer $post_id
  * @property integer $category_id
  *
  * @property Categories $category
- * @property Posts $post
+ * @property Post $post
  */
-class PostsCategories extends ActiveRecord
+class PostCategory extends ActiveRecord
 {
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'posts_categories';
+        return 'post_category';
     }
 
     /**
@@ -32,7 +32,7 @@ class PostsCategories extends ActiveRecord
             [['post_id', 'category_id'], 'required'],
             [['post_id', 'category_id'], 'integer'],
             [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Categories::className(), 'targetAttribute' => ['category_id' => 'id']],
-            [['post_id'], 'exist', 'skipOnError' => true, 'targetClass' => Posts::className(), 'targetAttribute' => ['post_id' => 'id']],
+            [['post_id'], 'exist', 'skipOnError' => true, 'targetClass' => Post::className(), 'targetAttribute' => ['post_id' => 'id']],
         ];
     }
 
@@ -60,6 +60,6 @@ class PostsCategories extends ActiveRecord
      */
     public function getPost()
     {
-        return $this->hasOne(Posts::className(), ['id' => 'post_id']);
+        return $this->hasOne(Post::className(), ['id' => 'post_id']);
     }
 }

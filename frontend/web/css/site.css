@@ -173,3 +173,7 @@ a:hover {
     padding: 1rem;
     width: 100%;
 }
+
+.create_post_block {
+    margin-left: 1em;
+}

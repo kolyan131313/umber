@@ -1,7 +1,7 @@
 <?php
 /* @var $this yii\web\View */
-use \yii\widgets\ListView;
-use \common\widgets\CategoryList;
+use yii\widgets\ListView;
+use common\widgets\CategoryList;
 
 $this->title = 'Umber';
 ?>
@@ -14,27 +14,32 @@ $this->title = 'Umber';
                     'class' => 'col-md-9'
                 ],
                 'dataProvider' => $listDataProvider,
-                'itemView'     => function ($model) {
-                    return $this->render('partials/_post_list_item', ['model' => $model]);
+                'itemView'     => function ($model) use ($loggedUser) {
+                    return $this->render('partials/_post_item', [
+                        'model'      => $model,
+                        'loggedUser' => $loggedUser
+                    ]);
                 },
                 'itemOptions'  => [
                     'tag' => false,
                 ],
                 'summary'      => '',
-                'layout'       => '{items}{pager}',
+                'emptyText'    => "<h1 align='center'>Posts haven't been added yet:(</h1>",
+                'layout'       => "{items}<div align='center'>{pager}</div>",
                 'pager'        => [
-                    'firstPageLabel' => 'First',
-                    'lastPageLabel'  => 'Last',
                     'maxButtonCount' => 4,
                     'options'        => [
-                        'class' => 'pagination text-center'
+                        'class' => 'pagination'
                     ]
                 ],
 
             ]);
             ?>
 
-            <?php echo CategoryList::widget(['limit' => 10]) ?>
+            <?php echo CategoryList::widget([
+                'limit'      => 10,
+                'loggedUser' => $loggedUser
+            ]) ?>
         </div>
 
     </div>
