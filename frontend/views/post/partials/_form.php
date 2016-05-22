@@ -36,7 +36,7 @@ use \kartik\file\FileInput;
         'pluginOptions' => [
             'allowedFileExtensions' => ['jpg', 'gif', 'png'],
             'initialPreview'        => [
-                Html::img("/uploads/" . $model->src, ['class' => 'img-responsive'])
+                (!empty($model->src) ? Html::img("/uploads/" . $model->src, ['class' => 'img-responsive']) : '')
             ],
             'overwriteInitial'      => false
         ]

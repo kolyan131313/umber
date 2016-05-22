@@ -42,7 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'moderated',
                 'value' => function ($model, $key, $index, $column) {
                     /** @var Post $model */
-                    return array_key_exists($model->moderated, $model->statuses) ? $model->statuses[$model->moderated] : '';
+                    return array_key_exists($model->moderated, $model->getStatuses()) ? $model->getStatuses()[$model->moderated] : '';
                 }
             ],
             [

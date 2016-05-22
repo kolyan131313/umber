@@ -5,9 +5,9 @@ Yii 2 Advanced Blog
   ```sh
  $ php init   
  php composer install
- php yii migrate
  php yii migrate --migrationPath=@yii/rbac/migrations
  php yii rbac/init
+ php yii migrate
  ```
  `Main routes`
  
