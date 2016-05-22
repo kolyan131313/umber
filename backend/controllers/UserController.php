@@ -23,21 +23,21 @@ class UserController extends Controller
     {
         return [
             'access' => [
-                'class' => AccessControl::className(),
+                'class'      => AccessControl::className(),
                 'ruleConfig' => [
                     'class' => AccessRule::className(),
                 ],
-                'only' => ['update', 'create', 'index', 'delete'],
-                'rules' => [
+                'only'       => ['update', 'create', 'index', 'delete'],
+                'rules'      => [
                     [
                         'actions' => ['update', 'create', 'index', 'delete'],
-                        'allow' => true,
-                        'roles' => ['admin'],
+                        'allow'   => true,
+                        'roles'   => ['admin'],
                     ]
                 ],
             ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
+            'verbs'  => [
+                'class'   => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -82,6 +82,9 @@ class UserController extends Controller
         $model = new User();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            $model->setPassword($model->password);
+            $model->save();
+
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('create', [

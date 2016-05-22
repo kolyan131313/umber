@@ -7,7 +7,7 @@ use \yii\helpers\Html;
 <div class="row post-content">
     <div class="col-md-3">
         <a href="<?php echo Url::to(['post/' . $model->id])?>">
-            <?php echo Html::img($model->getImagePath(true), ['class' => 'img-responsive']) ?>
+            <?php echo Html::img((isset($all) ? '..' : '') . '/uploads/' . $model->src, ['class' => 'img-responsive']) ?>
         </a>
     </div>
     <div class="col-md-9">

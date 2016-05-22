@@ -1,6 +1,7 @@
 Yii 2 Advanced Blog
 ===============================
 `Install application on Linux`
+
   ```sh
  $ php init   
  php composer install

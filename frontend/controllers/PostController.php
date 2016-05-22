@@ -150,11 +150,15 @@ class PostController extends Controller
             /** @var UploadedFile $image */
             $image = UploadedFile::getInstance($model, 'image');
 
-            $path = $model->prepareUploadFile($image);
-            Yii::$app->getSession()->setFlash('success', 'Post was successfully updated');
+            if (!is_null($image)) {
+                $path = $model->prepareUploadFile($image);
+            }
 
             if ($model->save()) {
-                $image->saveAs($path);
+                if(!is_null($image) && isset($path)) {
+                    $image->saveAs($path);
+                }
+
                 $model->linkCategory($model->categories);
 
                 Yii::$app->getSession()->setFlash('success', 'Post was successfully created');
@@ -163,7 +167,6 @@ class PostController extends Controller
             }
         } else {
             $model->loadCategories();
-            $model->image = $model->getImagePath(false);
 
             return $this->render('update', [
                 'model' => $model,

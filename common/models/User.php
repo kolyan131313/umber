@@ -31,9 +31,6 @@ class User extends ActiveRecord implements IdentityInterface
     const ROLE_ADMIN = 'admin';
     const ROLE_SUPER_ADMIN = 'superadmin';
 
-    /**
-     * @var string $password
-     */
     public $password;
 
     /**
@@ -61,15 +58,13 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             [['username', 'email'], 'unique'],
-            [['password', 'email', 'username', 'role'], 'required'],
             ['email', 'email'],
-            [['username', 'email'], 'string'],
+            [['username', 'email', 'password_hash', 'password'], 'string'],
             [['ban'], 'integer'],
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
             ['role', 'default', 'value' => self::ROLE_USER],
             ['role', 'in', 'range' => [self::ROLE_USER, self::ROLE_ADMIN, self::ROLE_MODER, self::ROLE_SUPER_ADMIN]],
-            ['password', 'string', 'min' => 6]
         ];
     }
 
@@ -85,6 +80,7 @@ class User extends ActiveRecord implements IdentityInterface
             'role'     => 'Role',
             'ban'      => 'Ban',
             'status'   => 'Status',
+            'password_hash' => 'Password',
         ];
     }
 
@@ -237,16 +233,16 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * Before save
-     *
-     * @param bool $insert
-     * @return bool
+     * Check admin
      */
-    public function beforeSave($insert)
+    public static function isUserAdmin($username)
     {
-        if (parent::beforeSave($insert) && $insert) {
-            $this->setPassword($this->password);
-
+        if (static::findOne([
+            'username' => $username,
+            'role'     => [self::ROLE_MODER, self::ROLE_ADMIN],
+            'ban'      => 0
+        ])
+        ) {
             return true;
         } else {
             return false;
@@ -254,15 +250,18 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * Check admin
+     * Check banned user
      */
-    public static function isUserAdmin($username)
+    public static function isBanned($username)
     {
-        if (static::findOne(['username' => $username, 'role' => ['admin', 'moderator']])) {
+        if (static::findOne([
+            'username' => $username,
+            'ban'      => 0
+        ])
+        ) {
             return true;
         } else {
             return false;
         }
-
     }
 }

@@ -83,7 +83,7 @@ class Post extends General
     public function rules()
     {
         return [
-            [['title', 'description', 'text', 'src', 'image', 'categories'], 'required'],
+            [['title', 'description', 'text', 'src', 'categories'], 'required'],
             [['text'], 'string'],
             [['created_by', 'modified_by', 'moderated', 'unvisible'], 'integer'],
             [['date_created', 'date_modified', 'src', 'image'], 'safe'],
@@ -186,8 +186,8 @@ class Post extends General
 
         $query->andFilterWhere([
             'AND',
-            ['unvisible' => self::STATUS_UNVISIBLE],
-            ['moderated' => self::STATUS_MODERATED]
+            [self::tableName() . '.unvisible' => self::STATUS_UNVISIBLE],
+            [self::tableName() . '.moderated' => self::STATUS_MODERATED]
         ]);
 
         $query->orderBy('id DESC');
@@ -265,6 +265,9 @@ class Post extends General
 
     /**
      * Prepare file fore create or update
+     *
+     * @param UploadedFile $image
+     * @return string
      */
     public function prepareUploadFile(UploadedFile $image)
     {
@@ -285,7 +288,9 @@ class Post extends General
     public function beforeSave($insert)
     {
         if (parent::beforeSave($insert)) {
-            $this->moderated = 0;
+            if(!Yii::$app->user->can('moderator')) {
+                $this->moderated = 0;
+            }
 
             return true;
         }

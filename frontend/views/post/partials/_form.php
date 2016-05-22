@@ -34,7 +34,11 @@ use \kartik\file\FileInput;
     <?php echo $form->field($model, 'image')->widget(FileInput::classname(), [
         'options'       => ['accept' => 'image/*'],
         'pluginOptions' => [
-            'allowedFileExtensions' => ['jpg', 'gif', 'png']
+            'allowedFileExtensions' => ['jpg', 'gif', 'png'],
+            'initialPreview'        => [
+                Html::img("/uploads/" . $model->src, ['class' => 'img-responsive'])
+            ],
+            'overwriteInitial'      => false
         ]
     ]); ?>
 
