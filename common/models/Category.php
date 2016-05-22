@@ -9,6 +9,7 @@ use Yii;
  * @property integer $id
  * @property string $title
  * @property string $url
+ * @property string $unvisible
  * @property string $date_created
  * @property string $date_modified
  *
@@ -32,6 +33,7 @@ class Category extends General
     {
         return [
             [['title', 'url'], 'required'],
+            ['unvisible', 'integer'],
             [['date_created', 'date_modified'], 'safe'],
             [['title'], 'string', 'max' => 255],
             ['url', 'unique']
@@ -47,6 +49,7 @@ class Category extends General
             'id' => 'ID',
             'title' => 'Title',
             'url' => 'Url',
+            'unvisible' => 'Hide Category',
             'date_created' => 'Date Created',
             'date_modified' => 'Date Modified',
         ];

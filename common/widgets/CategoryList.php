@@ -38,7 +38,7 @@ class CategoryList extends Widget
     {
         parent::init();
 
-        $this->categories = Category::find()->limit($this->limit)->all();
+        $this->categories = Category::find()->where(['unvisible' => 0])->limit($this->limit)->all();
 
         $this->calculatePosts();
     }

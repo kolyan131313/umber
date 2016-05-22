@@ -28,12 +28,14 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'id',
             'title',
             'url:url',
-            'visible',
-            'date_created',
-            'date_modified',
+            [
+                'attribute' => 'unvisible',
+                'value' => $model->unvisible ? 'Hide' : ''
+            ],
+            'date_created:datetime',
+            'date_modified:datetime',
         ],
     ]) ?>
 

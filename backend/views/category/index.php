@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use common\models\Category;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -23,10 +24,16 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'id',
             'title',
-            'url:url',
-            'visible',
-            'date_created',
-            // 'date_modified',
+            'url',
+            [
+                'attribute' => 'unvisible',
+                'value' => function ($model, $key, $index, $column) {
+                    /** @var Category $model */
+                    return $model->unvisible ? 'Hide' : '';
+                }
+            ],
+            'date_created:datetime',
+            'date_modified:datetime',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

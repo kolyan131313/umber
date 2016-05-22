@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use common\models\User;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -20,18 +21,18 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
-            'id',
             'username',
             'role',
-            'auth_key',
-            'password_hash',
-            // 'password_reset_token',
-            // 'email:email',
-            // 'status',
-            // 'ban',
-            // 'created_at',
-            // 'updated_at',
+            'email:email',
+            [
+                'attribute' => 'ban',
+                'value' => function ($model, $key, $index, $column) {
+                    /** @var User $model */
+                    return $model->ban ? 'Banned' : '';
+                }
+            ],
+            'created_at:datetime',
+            'updated_at:datetime',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

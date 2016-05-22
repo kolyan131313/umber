@@ -29,6 +29,12 @@ class User extends ActiveRecord implements IdentityInterface
     const ROLE_USER = 'user';
     const ROLE_MODER = 'moderator';
     const ROLE_ADMIN = 'admin';
+    const ROLE_SUPER_ADMIN = 'superadmin';
+
+    /**
+     * @var string $password
+     */
+    public $password;
 
     /**
      * @inheritdoc
@@ -54,10 +60,31 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
+            [['username', 'email'], 'unique'],
+            [['password', 'email', 'username', 'role'], 'required'],
+            ['email', 'email'],
+            [['username', 'email'], 'string'],
+            [['ban'], 'integer'],
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
             ['role', 'default', 'value' => self::ROLE_USER],
-            ['role', 'in', 'range' => [self::ROLE_USER, self::ROLE_ADMIN]],
+            ['role', 'in', 'range' => [self::ROLE_USER, self::ROLE_ADMIN, self::ROLE_MODER, self::ROLE_SUPER_ADMIN]],
+            ['password', 'string', 'min' => 6]
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id'       => 'ID',
+            'username' => 'Username',
+            'password' => 'Password',
+            'role'     => 'Role',
+            'ban'      => 'Ban',
+            'status'   => 'Status',
         ];
     }
 
@@ -207,6 +234,23 @@ class User extends ActiveRecord implements IdentityInterface
             $auth->revokeAll($this->id);
         }
         $auth->assign($role, $this->id);
+    }
+
+    /**
+     * Before save
+     *
+     * @param bool $insert
+     * @return bool
+     */
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert) && $insert) {
+            $this->setPassword($this->password);
+
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**

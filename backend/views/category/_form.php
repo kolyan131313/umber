@@ -12,16 +12,14 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
+    <?php echo $form->field($model, 'title')->textInput(['maxlength' => true]); ?>
 
-    <?= $form->field($model, 'url')->textInput(['maxlength' => true]) ?>
+    <?php echo $form->field($model, 'url')->textInput(['maxlength' => true]); ?>
 
-    <?= $form->field($model, 'date_created')->textInput() ?>
-
-    <?= $form->field($model, 'date_modified')->textInput() ?>
+    <?php echo $form->field($model, 'unvisible')->checkbox(); ?>
 
     <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?php echo Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
