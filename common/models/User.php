@@ -26,9 +26,9 @@ class User extends ActiveRecord implements IdentityInterface
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 10;
 
-    const ROLE_USER = 1;
-    const ROLE_MODER = 5;
-    const ROLE_ADMIN = 10;
+    const ROLE_USER = 'user';
+    const ROLE_MODER = 'moderator';
+    const ROLE_ADMIN = 'admin';
 
     /**
      * @inheritdoc
@@ -56,6 +56,8 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
+            ['role', 'default', 'value' => self::ROLE_USER],
+            ['role', 'in', 'range' => [self::ROLE_USER, self::ROLE_ADMIN]],
         ];
     }
 
@@ -100,7 +102,7 @@ class User extends ActiveRecord implements IdentityInterface
 
         return static::findOne([
             'password_reset_token' => $token,
-            'status' => self::STATUS_ACTIVE,
+            'status'               => self::STATUS_ACTIVE,
         ]);
     }
 
@@ -116,8 +118,9 @@ class User extends ActiveRecord implements IdentityInterface
             return false;
         }
 
-        $timestamp = (int) substr($token, strrpos($token, '_') + 1);
+        $timestamp = (int)substr($token, strrpos($token, '_') + 1);
         $expire = Yii::$app->params['user.passwordResetTokenExpire'];
+
         return $timestamp + $expire >= time();
     }
 
@@ -204,5 +207,18 @@ class User extends ActiveRecord implements IdentityInterface
             $auth->revokeAll($this->id);
         }
         $auth->assign($role, $this->id);
+    }
+
+    /**
+     * Check admin
+     */
+    public static function isUserAdmin($username)
+    {
+        if (static::findOne(['username' => $username, 'role' => ['admin', 'moderator']])) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 }

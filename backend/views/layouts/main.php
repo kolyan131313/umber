@@ -34,12 +34,16 @@ AppAsset::register($this);
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
-    $menuItems = [
-        ['label' => 'Home', 'url' => ['/site/index']],
-    ];
+
     if (Yii::$app->user->isGuest) {
         $menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
     } else {
+        $menuItems[] = ['label' => 'Home', 'url' => ['/site/index']];
+        if(Yii::$app->user->can('admin')) {
+            $menuItems[] = ['label' => 'Users', 'url' => ['/user']];
+        }
+        $menuItems[] = ['label' => 'Posts', 'url' => ['/post']];
+        $menuItems[] = ['label' => 'Categories', 'url' => ['/category']];
         $menuItems[] = '<li>'
             . Html::beginForm(['/site/logout'], 'post')
             . Html::submitButton(

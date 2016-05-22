@@ -164,7 +164,7 @@ class Post extends General
         $query = self::find();
 
         if ($category) {
-            $query->joinWith('categories');
+            $query->joinWith('categoryList');
             $query->andFilterWhere([
                 'AND',
                 ['category.url' => $category]

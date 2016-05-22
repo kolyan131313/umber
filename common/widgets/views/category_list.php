@@ -15,7 +15,7 @@ use yii\helpers\Html;
                 </a>
             <?php } ?>
         <?php } else { ?>
-            <?php echo Html::a("Categories haven't been added :(", ['#'], ['class' => 'btn btn-primary btn-md']); ?>
+            <?php echo Html::a("Categories haven't been added :(", ['#'], ['class' => 'menu-item list-group-item']); ?>
         <?php } ?>
     </div>
     <?php if ($loggedUser) { ?>
