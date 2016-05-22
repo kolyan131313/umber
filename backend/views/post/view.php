@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use \yii\helpers\ArrayHelper;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Post */
@@ -18,27 +19,36 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Delete', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
-            'data' => [
+            'data'  => [
                 'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
+                'method'  => 'post',
             ],
         ]) ?>
     </p>
 
     <?= DetailView::widget([
-        'model' => $model,
+        'model'      => $model,
         'attributes' => [
-            'id',
             'title',
             'description',
-            'text:ntext',
-            'src',
-            'created_by',
-            'modified_by',
-            'moderated',
-            'unvisible',
-            'date_created',
-            'date_modified',
+            [
+                'attribute' => 'created_by',
+                'value'     => $model->authorCreated->username
+            ],
+            [
+                'attribute' => 'moderated',
+                'value'     => array_key_exists($model->moderated, $model->getStatuses()) ? $model->getStatuses()[$model->moderated] : ''
+            ],
+            [
+                'attribute' => 'unvisible',
+                'value'     => $model->unvisible ? 'Hide' : ''
+            ],
+            [
+                'attribute' => 'categories',
+                'value'     => $model->categoryToString()
+            ],
+            'date_created:datetime',
+            'date_modified:datetime',
         ],
     ]) ?>
 

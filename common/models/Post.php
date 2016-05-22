@@ -45,6 +45,11 @@ class Post extends General
     public $image;
 
     /**
+     * @var array statuses
+     */
+    private $statuses = ['New', 'Moderated', 'Deleted'];
+
+    /**
      * @inheritdoc
      */
     public static function tableName()
@@ -81,10 +86,9 @@ class Post extends General
             [['title', 'description', 'text', 'src', 'image', 'categories'], 'required'],
             [['text'], 'string'],
             [['created_by', 'modified_by', 'moderated', 'unvisible'], 'integer'],
-            [['date_created', 'date_modified', 'src'], 'safe'],
+            [['date_created', 'date_modified', 'src', 'image'], 'safe'],
             [['title'], 'string', 'max' => 255],
             [['description'], 'string', 'max' => 512],
-            [['image'], 'safe'],
             [['image'], 'file', 'extensions' => 'jpg, gif, png'],
             [
                 ['created_by', 'modified_by'],
@@ -112,7 +116,7 @@ class Post extends General
             'src'           => 'Image',
             'created_by'    => 'Created By',
             'modified_by'   => 'Modified By',
-            'moderated'     => 'Moderated',
+            'moderated'     => 'Status',
             'unvisible'     => 'Hide publication',
             'date_created'  => 'Date Created',
             'date_modified' => 'Date Modified'
@@ -148,8 +152,17 @@ class Post extends General
      */
     public function getCategoryList()
     {
-        return $this->hasMany(Category::className(), ['id' => 'category_id'])->viaTable(PostCategory::tableName(),
-                ['post_id' => 'id']);
+        return $this->hasMany(Category::className(), ['id' => 'category_id'])
+            ->viaTable(PostCategory::tableName(), ['post_id' => 'id']);
+    }
+
+    /**
+     * Get All statuses
+     * @return array
+     */
+    public function getStatuses()
+    {
+        return $this->statuses;
     }
 
     /**
@@ -214,7 +227,25 @@ class Post extends General
      */
     public function getImagePath($post = false, $src = "")
     {
-        return ($post ? '../' : '') . Yii::$app->params['uploadPath'] . DIRECTORY_SEPARATOR . ($src ? $src : $this->src);
+        return $this->createMainImagePath($post, $src);
+    }
+
+    /**
+     * Processing path for images
+     *
+     * @param bool $post
+     * @param string $src
+     * @return string
+     */
+    public function createMainImagePath($post = false, $src = "")
+    {
+        $path = Yii::getAlias('@frontend');
+        $parts = explode(DIRECTORY_SEPARATOR, $path);
+        $parts[] = 'web';
+
+        $resPath = implode($parts, DIRECTORY_SEPARATOR);
+
+        return $resPath . DIRECTORY_SEPARATOR . ($post ? '../' : '') . Yii::$app->params['uploadPath'] . DIRECTORY_SEPARATOR . ($src ? $src : $this->src);
     }
 
     /**
@@ -226,9 +257,9 @@ class Post extends General
         $categories = $this->getCategoryList()->all();
 
         if ($categories && is_array($categories)) {
-           foreach ($categories as $category) {
-               array_push($this->categories, $category->id);
-           }
+            foreach ($categories as $category) {
+                array_push($this->categories, $category->id);
+            }
         }
     }
 
@@ -260,5 +291,24 @@ class Post extends General
         }
 
         return false;
+    }
+
+    /**
+     * Category list to array
+     *
+     * @return string
+     */
+    public function categoryToString()
+    {
+        $catList = [];
+
+        /** @var $this Post */
+        if ($this->categoryList && is_array($this->categoryList)) {
+            foreach ($this->categoryList as $category) {
+                $catList[] = $category->title;
+            }
+        }
+
+        return implode(', ', $catList);
     }
 }

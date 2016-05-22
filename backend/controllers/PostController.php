@@ -8,6 +8,9 @@ use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessRule;
+use yii\filters\AccessControl;
+use yii\web\UploadedFile;
 
 /**
  * PostController implements the CRUD actions for Post model.
@@ -20,6 +23,20 @@ class PostController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'ruleConfig' => [
+                    'class' => AccessRule::className(),
+                ],
+                'only' => ['update', 'create', 'index', 'delete'],
+                'rules' => [
+                    [
+                        'actions' => ['update', 'create', 'index', 'delete'],
+                        'allow' => true,
+                        'roles' => ['moderator'],
+                    ]
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -65,13 +82,24 @@ class PostController extends Controller
     {
         $model = new Post();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+        if ($model->load(Yii::$app->request->post())) {
+            /** @var UploadedFile $image */
+            $image = UploadedFile::getInstance($model, 'image');
+            $path = $model->prepareUploadFile($image);
+
+            if ($model->save()) {
+                $image->saveAs($path);
+                $model->linkCategory($model->categories);
+
+                Yii::$app->getSession()->setFlash('success', 'Post was successfully created');
+
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
+
+        return $this->render('create', [
+            'model' => $model,
+        ]);
     }
 
     /**
@@ -84,9 +112,26 @@ class PostController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(\Yii::$app->request->post())) {
+
+            /** @var UploadedFile $image */
+            $image = UploadedFile::getInstance($model, 'image');
+
+            $path = $model->prepareUploadFile($image);
+            Yii::$app->getSession()->setFlash('success', 'Post was successfully updated');
+
+            if ($model->save()) {
+                $image->saveAs($path);
+                $model->linkCategory($model->categories);
+
+                Yii::$app->getSession()->setFlash('success', 'Post was successfully created');
+
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         } else {
+            $model->loadCategories();
+            $model->image = $model->getImagePath(false);
+
             return $this->render('update', [
                 'model' => $model,
             ]);

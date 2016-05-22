@@ -2,6 +2,11 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use mihaildev\ckeditor\CKEditor;
+use kartik\select2\Select2;
+use yii\helpers\ArrayHelper;
+use common\models\Category;
+use \kartik\file\FileInput;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Post */
@@ -12,28 +17,43 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
+    <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]); ?>
 
-    <?= $form->field($model, 'description')->textInput(['maxlength' => true]) ?>
+    <?php echo $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'text')->textarea(['rows' => 6]) ?>
+    <?php echo $form->field($model, 'description')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'src')->textInput(['maxlength' => true]) ?>
+    <?php echo $form->field($model, 'categories')->widget(Select2::classname(), [
+        'data'          => ArrayHelper::map(Category::find()->all(), 'id', 'title'),
+        'options'       => ['placeholder' => 'Select a category ...'],
+        'pluginOptions' => [
+            'allowClear' => true,
+            'multiple'   => true
+        ],
+    ]); ?>
 
-    <?= $form->field($model, 'created_by')->textInput() ?>
+    <?php echo $form->field($model, 'image')->widget(FileInput::classname(), [
+        'options'       => ['accept' => 'image/*'],
+        'pluginOptions' => [
+            'allowedFileExtensions' => ['jpg', 'gif', 'png']
+        ]
+    ]); ?>
 
-    <?= $form->field($model, 'modified_by')->textInput() ?>
+    <?php echo $form->field($model, 'text')->widget(CKEditor::className(), [
+        'editorOptions' => [
+            'preset' => 'standard',
+            'inline' => false
+        ],
+    ]); ?>
+    <?php echo $form->field($model, 'unvisible')->checkbox()->label(false); ?>
 
-    <?= $form->field($model, 'moderated')->textInput() ?>
-
-    <?= $form->field($model, 'unvisible')->textInput() ?>
-
-    <?= $form->field($model, 'date_created')->textInput() ?>
-
-    <?= $form->field($model, 'date_modified')->textInput() ?>
+    <?php echo $form->field($model, 'moderated')->widget(Select2::classname(), [
+        'data'    => $model->getStatuses(),
+        'options' => ['placeholder' => 'Select a statuses ...']
+    ]); ?>
 
     <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?php echo Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => 'btn btn-primary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

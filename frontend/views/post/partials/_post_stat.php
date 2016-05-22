@@ -13,9 +13,11 @@ use yii\helpers\Url;
         Categories :
         <?php if (isset($model->categoryList) && !empty($model->categoryList) && is_array($model->categoryList)) { ?>
             <?php foreach ($model->categoryList as $category) { ?>
-                <a href="<?php echo Url::to(['posts/' . $category->url])?>">
-                    <span class="label label-info"><?php echo $category->title; ?></span>
-                </a>
+                <?php if(!$category->unvisible) { ?>
+                    <a href="<?php echo Url::to(['posts/' . $category->url])?>">
+                        <span class="label label-info"><?php echo $category->title; ?></span>
+                    </a>
+                <?php } ?>
             <?php } ?>
         <?php } ?>
     </div>

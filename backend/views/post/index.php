@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use common\models\Post;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -21,17 +22,38 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
             'title',
             'description',
-            'text:ntext',
-            'src',
-            // 'created_by',
-            // 'modified_by',
-            // 'moderated',
-            // 'unvisible',
-            // 'date_created',
-            // 'date_modified',
+            [
+                'attribute' => 'categories',
+                'value' => function ($model, $key, $index, $column) {
+                    /** @var Post $model */
+                    return $model->categoryToString();
+                }
+            ],
+            [
+                'attribute' => 'created_by',
+                'value' => function ($model, $key, $index, $column) {
+                    /** @var Post $model */
+                    return $model->authorCreated->username;
+                }
+            ],
+            [
+                'attribute' => 'moderated',
+                'value' => function ($model, $key, $index, $column) {
+                    /** @var Post $model */
+                    return array_key_exists($model->moderated, $model->statuses) ? $model->statuses[$model->moderated] : '';
+                }
+            ],
+            [
+                'attribute' => 'unvisible',
+                'value' => function ($model, $key, $index, $column) {
+                    /** @var Post $model */
+                    return $model->unvisible ? 'Hide' : '';
+                }
+            ],
+            'date_created:datetime',
+            'date_modified:datetime',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
