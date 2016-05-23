@@ -15,6 +15,7 @@ Yii 2 Advanced Blog
  `Main routes`
  
  You have to set role for admin(role => admin) first time in DB
+ When user have admin or moderator role Post doesn't change status to `moderated`
  
  ```sh
  domain.com - Main application(frontend)
