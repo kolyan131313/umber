@@ -1,7 +1,10 @@
 Yii 2 Advanced Blog
 ===============================
 `Install application on Linux`
-
+ 
+ 1) create DB in MYSQL
+ 2) set settings in config files
+ 
   ```sh
  $ php init   
  php composer install
@@ -10,6 +13,8 @@ Yii 2 Advanced Blog
  php yii migrate
  ```
  `Main routes`
+ 
+ You have to set role for admin(role => admin) first time in DB
  
  ```sh
  domain.com - Main application(frontend)
